@@ -1,18 +1,16 @@
 """
-EyeRest - Eye protection app (20-20-20 rule)
+Iris - Eye protection app (20-20-20 rule)
 """
 import sys
 import ctypes
-from PyQt6.QtWidgets import QApplication, QSplashScreen
-from PyQt6.QtGui import QPixmap, QColor, QPainter, QIcon, QImage
+from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt, QTimer
-import io
 
+from app.tray import SystemTray
 from app.startup import auto_update_startup_path
 from app.icon_cache import build_qicon, get_ico_path
 from app.settings import Settings
 from app.timer_engine import TimerEngine
-from app.tray import SystemTray
 
 
 def _launched_at_startup():
@@ -21,7 +19,7 @@ def _launched_at_startup():
 
 def _single_instance():
     try:
-        ctypes.windll.kernel32.CreateMutexW(None, True, "EyeRestSingleInstanceMutex")
+        ctypes.windll.kernel32.CreateMutexW(None, True, "IrisSingleInstanceMutex")
         return ctypes.windll.kernel32.GetLastError() != 183
     except Exception:
         return True
@@ -44,7 +42,13 @@ def main():
         sys.exit(0)
 
     try:
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("eyerest.app.1")
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("iris.eyeprotection.app.1")
+    except Exception:
+        pass
+
+    try:
+        import pyi_splash
+        pyi_splash.close()
     except Exception:
         pass
 
@@ -55,22 +59,14 @@ def main():
 
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
-    app.setApplicationName("EyeRest")
+    app.setApplicationName("Iris")
 
     icon = build_qicon()
     app.setWindowIcon(icon)
 
     settings = Settings()
 
-    # Close PyInstaller splash screen if present
-    try:
-        import pyi_splash
-        pyi_splash.close()
-    except Exception:
-        pass
-
     if _launched_at_startup() and settings.get("start_minimized") and settings.get("start_with_windows"):
-        # Background mode — create everything normally, no window shown
         from app.main_window import MainWindow
         window = MainWindow(settings)
         window.setWindowIcon(icon)
@@ -78,13 +74,12 @@ def main():
         window.set_engine(engine)
         tray = SystemTray(settings, window, engine, app)
         tray.setIcon(icon)
+        window.set_tray_ref(tray)
         engine.set_tray(tray)
         engine.set_main_window(window)
         engine.start()
         tray.show()
     else:
-        # Defer window creation until AFTER event loop starts
-        # so the HWND is never created before the loop is running
         engine = TimerEngine(settings)
         engine.start()
 
@@ -96,6 +91,7 @@ def main():
 
             tray = SystemTray(settings, window, engine, app)
             tray.setIcon(icon)
+            window.set_tray_ref(tray)
             engine.set_tray(tray)
             engine.set_main_window(window)
             tray.show()
@@ -112,7 +108,6 @@ def main():
             except Exception:
                 pass
 
-        # Create window on first event loop iteration
         QTimer.singleShot(0, _create_and_show)
 
     sys.exit(app.exec())

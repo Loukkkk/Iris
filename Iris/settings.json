@@ -1,0 +1,11 @@
+{
+  "work_interval_min": 20,
+  "break_duration_sec": 20,
+  "look_distance_m": 6,
+  "start_with_windows": false,
+  "start_minimized": false,
+  "skip_fullscreen": true,
+  "sound_enabled": true,
+  "theme": "dark",
+  "language": "en"
+}
