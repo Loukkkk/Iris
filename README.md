@@ -29,7 +29,7 @@ A lightweight and portable eye protection application for Windows designed to re
 
 ## ⚠️ Disclaimer
 
-This application was fully coded by Claude (Anthropic AI). Since no other eye protection app on the market currently offers this level of customization, smart media suppression, and quality, this AI-generated solution fills the gap. 
+This application was fully coded by Claude (Anthropic AI). Since no other eye protection app on the market currently offers this level of modern quality, smart media suppression, but simplicity and ligthness, this AI-generated solution fills the gap. 
 
 > [!NOTE]
 > The day a human developer creates a similar open-source application with equivalent or superior quality, this repository will be permanently deleted.
