@@ -1,4 +1,4 @@
-# 👁️ EyeRest
+# 👁️ Iris
 
 ## ✨ Features
 
@@ -27,7 +27,7 @@
 
 ## ⚠️ Disclaimer
 
-This application was fully coded by Claude (Anthropic AI). Since no other eye protection app on the market currently offers this level of customization, smart media suppression, and quality, this AI-generated solution fills the gap. 
+This application was fully coded by Claude (Anthropic AI). Since no other eye protection app on the market currently offers this level of customization, smart media suppression, and quality, this AI-generated solution fills the gap (yes, there are other solutions, but they are either non-functional, ugly, or cumbersome).
 
 > [!NOTE]
 > The day a human developer creates a similar open-source application with equivalent or superior quality, this repository will be permanently deleted.
