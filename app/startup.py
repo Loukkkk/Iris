@@ -1,5 +1,5 @@
 """
-Windows startup registry — adds/removes EyeRest from HKCU Run key.
+Windows startup registry — adds/removes Iris from HKCU Run key.
 Auto-updates the path every launch if the exe has moved.
 """
 import sys
@@ -66,17 +66,34 @@ def get_registered_path() -> str:
     return ""
 
 
+def _remove_old_entry(old_name: str):
+    """Remove a stale registry entry from a previous app name."""
+    try:
+        import winreg
+        key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, REG_PATH, 0, winreg.KEY_SET_VALUE)
+        try:
+            winreg.DeleteValue(key, old_name)
+        except FileNotFoundError:
+            pass
+        winreg.CloseKey(key)
+    except Exception:
+        pass
+
+
 def auto_update_startup_path():
     """
-    Called at every launch. If startup is enabled but the registered path
-    doesn't match the current exe location, silently update the registry.
+    Called at every launch.
+    - Removes stale EyeRest/EyeRest registry entry if present.
+    - If startup is enabled, updates path if exe has moved.
     """
+    # Clean up old name from previous versions
+    _remove_old_entry("EyeRest")
+
     if not get_startup():
-        return  # startup not enabled, nothing to do
+        return
 
     current = _get_exe_path()
     registered = get_registered_path()
-
     if current != registered:
         set_startup(True)
         print(f"[startup] Path updated: {current}")

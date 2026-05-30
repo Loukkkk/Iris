@@ -11,6 +11,7 @@ A lightweight and portable eye protection application for Windows designed to re
 * **🚀 Startup Friendly:** Optional Windows startup launch, including a silent background-only mode.
 * **📍 True Portability:** Automatically updates the Windows startup registry entry if you move the executable to another folder.
 * **🪶 Ultra Low CPU Usage:** Near-zero resource usage with practically 0% CPU consumption (max 0.1% under stress).
+* **🌐 Language:** Available in English and French. It's is auto-detected from your OS on first launch.
 
 ## 🛠️ Built With
 
@@ -29,7 +30,7 @@ A lightweight and portable eye protection application for Windows designed to re
 
 ## ⚠️ Disclaimer
 
-This application was fully coded by Claude (Anthropic AI). Since no other eye protection app on the market currently offers this level of modern quality, smart media suppression, but simplicity and ligthness, this AI-generated solution fills the gap. 
+This application was fully coded by Claude (Anthropic AI). Since no other eye protection app on the market currently offers this level of modern quality, smart media suppression, but simplicity and lightness, this AI-generated solution fills the gap.
 
 > [!NOTE]
 > The day a human developer creates a similar open-source application with equivalent or superior quality, this repository will be permanently deleted.
@@ -63,7 +64,7 @@ python main.py
 ```bash
 pip install pyinstaller
 build.bat
-# The compiled executable will be located in dist/iris.exe
+# The compiled executable will be located in dist/Iris.exe
 ```
 
 ---
@@ -81,7 +82,8 @@ iris/
 ├── icon.ico              # Cached application icon
 └── app/
     ├── __init__.py
-    ├── settings.py       # JSON configuration persistence (%APPDATA%\EyeRest\settings.json)
+    ├── i18n.py           # Internationalization (English & French)
+    ├── settings.py       # JSON configuration persistence (%APPDATA%\Iris\settings.json)
     ├── detector.py       # Fullscreen/Game/Video detection via native Windows API (ctypes & winrt)
     ├── timer_engine.py   # Core timer logic running on a low-overhead 1Hz QTimer
     ├── break_overlay.py  # Animated semi-transparent full-screen break overlay
@@ -94,15 +96,12 @@ iris/
 
 ## How Smart Media Suppression Works
 
-To avoid interrupting you mid-game or mid-movie, EyeRest detects fullscreen applications using four distinct native layers (with zero active polling overhead):
+To avoid interrupting you mid-game or mid-movie, Iris detects fullscreen applications using four distinct native layers (with zero active polling overhead):
 
-* SHQueryUserNotificationState: Detects running Direct3D applications (games), presentation modes, or "busy" full-screen states.
-
-* Window vs. Monitor Geometry: Compares the active window rectangle bounds against the monitor resolution to detect generic borderless fullscreen applications.
-
-* Hardcoded Process List: Automatically flags known media players like VLC, MPC-HC, PotPlayer, MPV, etc.
-
-* Windows Media Session API (SMTC): Detects windowed media playback (like Netflix or YouTube running in a browser tab).
+* **SHQueryUserNotificationState:** Detects running Direct3D applications (games), presentation modes, or "busy" full-screen states.
+* **Window vs. Monitor Geometry:** Compares the active window rectangle bounds against the monitor resolution to detect generic borderless fullscreen applications.
+* **Hardcoded Process List:** Automatically flags known media players like VLC, MPC-HC, PotPlayer, MPV, etc.
+* **Windows Media Session API (SMTC):** Detects windowed media playback (like Netflix or YouTube running in a browser tab).
 
 If a break is due while suppression is active, the alert queues up silently and fires immediately once you exit the fullscreen application or stop media playback.
 
@@ -110,4 +109,4 @@ If a break is due while suppression is active, the alert queues up silently and 
 
 ## Configuration File Path
 
-`%APPDATA%\iris\settings.json`
+`%APPDATA%\Iris\settings.json`

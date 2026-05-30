@@ -3,10 +3,10 @@
   <assemblyIdentity
     version="1.0.0.0"
     processorArchitecture="amd64"
-    name="EyeRest"
+    name="Iris"
     type="win32"
   />
-  <description>EyeRest - Eye protection app</description>
+  <description>Iris - Eye protection app</description>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
     <security>
       <requestedPrivileges>

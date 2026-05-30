@@ -89,7 +89,7 @@ class TimerEngine(QObject):
                     self._suppressed_ticks += 1
                     self.tick.emit(self._elapsed, total, self.STATE_SUPPRESSED)
                     if self._tray:
-                        self._tray.update_tooltip("EyeRest — en attente (fullscreen détecté)")
+                        self._tray.update_tooltip("Iris — en attente (fullscreen détecté)")
                     return
                 else:
                     self._pending_break = False
@@ -103,7 +103,7 @@ class TimerEngine(QObject):
                 if self._tray:
                     remaining = total - self._elapsed
                     m, s = divmod(remaining, 60)
-                    self._tray.update_tooltip(f"EyeRest — prochaine pause dans {m:02d}:{s:02d}")
+                    self._tray.update_tooltip(f"Iris — prochaine pause dans {m:02d}:{s:02d}")
 
         elif self._state == self.STATE_SUPPRESSED:
             # Keep checking every second
@@ -129,7 +129,7 @@ class TimerEngine(QObject):
                 if self._main_window:
                     self._main_window.hide_break_overlay()
                 if self._tray:
-                    self._tray.update_tooltip("EyeRest — bonne pause !")
+                    self._tray.update_tooltip("Iris — bonne pause !")
 
     def _show_break(self):
         if self._main_window:

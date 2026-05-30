@@ -10,53 +10,23 @@ from PyQt6.QtGui import (
     QPainter, QColor, QPen, QFont, QIcon, QPixmap,
     QPainterPath, QImage
 )
-from PIL import Image, ImageDraw
-import struct, io
+import io
 
 from app.break_overlay import BreakOverlay
 from app.startup import set_startup, get_startup
 from app.i18n import I18n
 
 
-# ── Icon ─────────────────────────────────────────────────────────────────────
-
-def _make_icon_image(s):
-    S = s * 2
-    img = Image.new('RGBA', (S, S), (0,0,0,0))
-    d = ImageDraw.Draw(img)
-    r = max(2, int(S*0.22))
-    d.rounded_rectangle([0,0,S-1,S-1], radius=r, fill=(10,18,32,255))
-    ew,eh = int(S*0.72),int(S*0.41); ex,ey=(S-ew)//2,(S-eh)//2
-    d.ellipse([ex,ey,ex+ew,ey+eh], fill=(215,238,248,255))
-    ir=int(S*0.185); cx,cy=S//2,S//2
-    d.ellipse([cx-ir,cy-ir,cx+ir,cy+ir], fill=(35,175,220,255))
-    ir2=int(S*0.13)
-    d.ellipse([cx-ir2,cy-ir2,cx+ir2,cy+ir2], fill=(75,210,245,255))
-    pr=int(S*0.08)
-    d.ellipse([cx-pr,cy-pr,cx+pr,cy+pr], fill=(5,10,22,255))
-    hr=max(2,int(S*0.052)); hx=cx+int(ir*0.20); hy=cy-int(ir*0.46)
-    d.ellipse([hx,hy,hx+hr*2,hy+hr*2], fill=(255,255,255,220))
-    return img.resize((s,s), Image.LANCZOS)
+# ── Icon — loaded from cache only, no PIL in main process ───────────────────
 
 def _make_ico_bytes():
-    sizes = [16,32,48,64,128,256]
-    pngs = []
-    for s in sizes:
-        buf = io.BytesIO(); _make_icon_image(s).save(buf,'PNG',optimize=True); pngs.append(buf.getvalue())
-    n = len(sizes); header = struct.pack('<HHH',0,1,n)
-    dirs = b''; offset = 6+n*16
-    for i,s in enumerate(sizes):
-        w = 0 if s==256 else s
-        dirs += struct.pack('<BBBBHHII',w,w,0,0,1,32,len(pngs[i]),offset); offset+=len(pngs[i])
-    return header+dirs+b''.join(pngs)
+    from app.icon_cache import get_ico_path
+    from pathlib import Path
+    return Path(get_ico_path()).read_bytes()
 
 def _app_icon():
-    icon = QIcon()
-    for s in [16,24,32,48,64,128,256]:
-        img = _make_icon_image(s)
-        buf = io.BytesIO(); img.save(buf,'PNG'); buf.seek(0)
-        icon.addPixmap(QPixmap.fromImage(QImage.fromData(buf.read(),'PNG')))
-    return icon
+    from app.icon_cache import build_qicon
+    return build_qicon()
 
 
 # ── Custom SpinBox ────────────────────────────────────────────────────────────
@@ -315,9 +285,12 @@ class MainWindow(QMainWindow):
         # Header
         hdr=QHBoxLayout(); hdr.setSpacing(10)
         icon_lbl=QLabel()
-        img=_make_icon_image(40); buf=io.BytesIO(); img.save(buf,'PNG'); buf.seek(0)
-        icon_lbl.setPixmap(QPixmap.fromImage(QImage.fromData(buf.read(),'PNG')).scaled(
-            32,32,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation))
+        from app.icon_cache import get_ico_path
+        px = QPixmap(get_ico_path())
+        if not px.isNull():
+            icon_lbl.setPixmap(px.scaled(
+                32,32,Qt.AspectRatioMode.KeepAspectRatio,Qt.TransformationMode.SmoothTransformation))
+        del px
         icon_lbl.setFixedSize(36,36)
         hv=QVBoxLayout(); hv.setSpacing(0)
         hv.addWidget(lbl("Iris",16,bold=True,color="#E8F4F8"))
