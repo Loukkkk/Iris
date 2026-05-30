@@ -1,0 +1,15 @@
+# Fichiers temporaires de Python
+__pycache__/
+*.pyc
+
+# Fichiers de compilation PyInstaller
+build/
+*.spec
+
+# L'exécutable final (optionnel mais recommandé)
+dist/
+
+# Fichiers de configuration système ou d'IDE
+.vscode/
+.idea/
+Thumbs.db
