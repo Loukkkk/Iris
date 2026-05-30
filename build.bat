@@ -1,9 +1,9 @@
 @echo off
 cd /d "%~dp0"
-title EyeRest — Build
+title Iris — Build
 
 echo.
-echo  === EyeRest Build ===
+echo  === Iris Build ===
 echo  Dossier : %CD%
 echo.
 
@@ -25,7 +25,7 @@ echo.
 echo [3/4] Nettoyage...
 if exist dist rmdir /s /q dist
 if exist build rmdir /s /q build
-if exist EyeRest.spec del /q EyeRest.spec
+if exist Iris.spec del /q Iris.spec
 
 echo.
 echo [4/4] Compilation...
@@ -33,7 +33,7 @@ python -m PyInstaller ^
     --noconfirm ^
     --onefile ^
     --windowed ^
-    --name "EyeRest" ^
+    --name "Iris" ^
     --icon "icon.ico" ^
     --splash splash.png ^
     --hidden-import winreg ^
@@ -43,10 +43,10 @@ python -m PyInstaller ^
 if errorlevel 1 ( echo ERREUR PyInstaller & pause & exit /b 1 )
 
 if exist build rmdir /s /q build
-if exist EyeRest.spec del /q EyeRest.spec
+if exist Iris.spec del /q Iris.spec
 
 echo.
-echo  === Build termine ! dist\EyeRest.exe ===
+echo  === Build termine ! dist\Iris.exe ===
 echo.
 explorer dist
 pause
