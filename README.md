@@ -93,13 +93,13 @@ eyerest/
 
 To avoid interrupting you mid-game or mid-movie, EyeRest detects fullscreen applications using four distinct native layers (with zero active polling overhead):
 
-    SHQueryUserNotificationState: Detects running Direct3D applications (games), presentation modes, or "busy" full-screen states.
+* SHQueryUserNotificationState: Detects running Direct3D applications (games), presentation modes, or "busy" full-screen states.
 
-    Window vs. Monitor Geometry: Compares the active window rectangle bounds against the monitor resolution to detect generic borderless fullscreen applications.
+* Window vs. Monitor Geometry: Compares the active window rectangle bounds against the monitor resolution to detect generic borderless fullscreen applications.
 
-    Hardcoded Process List: Automatically flags known media players like VLC, MPC-HC, PotPlayer, MPV, etc.
+* Hardcoded Process List: Automatically flags known media players like VLC, MPC-HC, PotPlayer, MPV, etc.
 
-    Windows Media Session API (SMTC): Detects windowed media playback (like Netflix or YouTube running in a browser tab).
+* Windows Media Session API (SMTC): Detects windowed media playback (like Netflix or YouTube running in a browser tab).
 
 If a break is due while suppression is active, the alert queues up silently and fires immediately once you exit the fullscreen application or stop media playback.
 
