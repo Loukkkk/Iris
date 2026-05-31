@@ -46,11 +46,17 @@ def main():
     except Exception:
         pass
 
-    try:
-        import pyi_splash
-        pyi_splash.close()
-    except Exception:
-        pass
+    
+    # If launched from Iris_app.exe (extracted by the launcher), record the
+    # launcher path passed via --launcher-path so startup registry stays correct.
+    launcher_path = None
+    for i, arg in enumerate(sys.argv):
+        if arg == "--launcher-path" and i + 1 < len(sys.argv):
+            launcher_path = sys.argv[i + 1]
+            break
+    if launcher_path and getattr(sys, "frozen", False):
+        from app.settings import Settings as _S
+        _s = _S(); _s.set("launcher_path", launcher_path)
 
     auto_update_startup_path()
 

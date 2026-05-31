@@ -13,12 +13,35 @@ A lightweight and portable eye protection application for Windows designed to re
 * **🪶 Ultra Low CPU Usage:** Near-zero resource usage with practically 0% CPU consumption (max 0.1% under stress).
 * **🌐 Language:** Available in English and French. It's is auto-detected from your OS on first launch.
 
+---
+
+## 🗑️ Uninstall
+
+Iris does not have an installer — to fully remove it:
+
+1. Exit Iris (right-click the tray icon → **Quit**)
+2. Delete `Iris.exe`
+3. Delete the following folders:
+   - `%APPDATA%\Iris` (settings)
+   - `%LOCALAPPDATA%\Iris` (application cache)
+4. If you had **Start with Windows** enabled, remove the startup entry:
+   - Open **Registry Editor** (`regedit`)
+   - Navigate to `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`
+   - Delete the `Iris` entry
+
+> [!TIP]
+> The easiest way to remove the startup entry is to uncheck **Start with Windows** in Iris settings *before* quitting.
+
+---
+
 ## 🛠️ Built With
 
 * **Python**
 * **PyQt6**
 * **Pillow**
 * **winrt**
+
+---
 
 ## 🚀 How to Download and Run
 
@@ -34,6 +57,8 @@ This application was fully coded by Claude (Anthropic AI). Since no other eye pr
 
 > [!NOTE]
 > The day a human developer creates a similar open-source application with equivalent or superior quality, this repository will be permanently deleted.
+
+---
 
 ## 🔒 Security & Permissions
 

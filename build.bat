@@ -10,26 +10,27 @@ python --version
 if errorlevel 1 ( echo ERREUR : Python introuvable. & pause & exit /b 1 )
 
 echo.
-echo [1/4] Installation des dependances...
+echo [1/7] Installation des dependances...
 python -m pip install PyQt6 pillow winrt-Windows.Media.Control winrt-Windows.Foundation pyinstaller --quiet
 if errorlevel 1 ( echo ERREUR pip & pause & exit /b 1 )
 echo OK
 
 echo.
-echo [2/4] Nettoyage...
+echo [2/7] Nettoyage...
 if exist dist rmdir /s /q dist
 if exist build rmdir /s /q build
 if exist Iris.spec del /q Iris.spec
+if exist Iris_app.spec del /q Iris_app.spec
+if exist Iris_app.zip del /q Iris_app.zip
 
 echo.
-echo [3/4] Compilation...
+echo [3/7] Compilation de l'application principale (onedir)...
 python -m PyInstaller ^
     --noconfirm ^
-    --onefile ^
+    --onedir ^
     --windowed ^
-    --name "Iris" ^
+    --name "Iris_app" ^
     --icon "icon.ico" ^
-    --splash splash.png ^
     --hidden-import winreg ^
     --collect-all PyQt6 ^
     --add-data "app;app" ^
@@ -50,13 +51,37 @@ python -m PyInstaller ^
     --exclude-module pandas ^
     --exclude-module matplotlib ^
     main.py
-if errorlevel 1 ( echo ERREUR PyInstaller & pause & exit /b 1 )
+if errorlevel 1 ( echo ERREUR PyInstaller (app) & pause & exit /b 1 )
 
+echo.
+echo [4/7] Compression du dossier Iris_app en zip...
+python -c "import zipfile, os; z=zipfile.ZipFile('Iris_app.zip','w',zipfile.ZIP_DEFLATED); [z.write(os.path.join(r,f), os.path.relpath(os.path.join(r,f),'dist/Iris_app')) for r,d,fs in os.walk('dist/Iris_app') for f in fs]; z.close(); print('  OK -', round(os.path.getsize('Iris_app.zip')/1024/1024,1), 'MB')"
+if errorlevel 1 ( echo ERREUR zip & pause & exit /b 1 )
+
+echo.
+echo [5/7] Compilation du launcher (Iris.exe) avec Iris_app.zip integre...
+python -m PyInstaller ^
+    --noconfirm ^
+    --onefile ^
+    --windowed ^
+    --name "Iris" ^
+    --icon "icon.ico" ^
+    --add-data "Iris_app.zip;." ^
+    launcher.py
+if errorlevel 1 ( echo ERREUR PyInstaller (launcher) & pause & exit /b 1 )
+
+echo.
+echo [6/7] Nettoyage...
 if exist build rmdir /s /q build
 if exist Iris.spec del /q Iris.spec
+if exist Iris_app.spec del /q Iris_app.spec
+if exist Iris_app.zip del /q Iris_app.zip
+if exist dist\Iris_app rmdir /s /q dist\Iris_app
 
 echo.
 echo  === Build termine ! dist\Iris.exe ===
+echo  Premier lancement : extraction de l'app (quelques secondes)
+echo  Lancements suivants : demarrage instantane
 echo.
 explorer dist
 pause

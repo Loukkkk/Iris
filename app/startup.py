@@ -11,6 +11,20 @@ REG_PATH = r"Software\Microsoft\Windows\CurrentVersion\Run"
 
 def _get_exe_path() -> str:
     if getattr(sys, "frozen", False):
+        # sys.executable is Iris_app.exe in %LOCALAPPDATA%\Iris\.
+        # The startup entry must point to the original Iris.exe the user placed
+        # somewhere (e.g. Desktop / Downloads). We store that path in settings
+        # at first launch via auto_update_startup_path, so we read it back here.
+        # Fallback: use sys.executable if no launcher path is known yet.
+        try:
+            import json, pathlib
+            cfg = pathlib.Path(os.getenv("APPDATA", ".")) / "Iris" / "settings.json"
+            data = json.loads(cfg.read_text(encoding="utf-8"))
+            launcher = data.get("launcher_path", "")
+            if launcher and os.path.exists(launcher):
+                return f'"{launcher}" --startup'
+        except Exception:
+            pass
         return f'"{sys.executable}" --startup'
     else:
         main = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "main.py"))
