@@ -84,5 +84,7 @@ echo  === Build termine ! dist\Iris.exe ===
 echo  Premier lancement : extraction de l'app (quelques secondes)
 echo  Lancements suivants : demarrage instantane
 echo.
-explorer dist
-pause
+if "%CI%"=="" (
+    explorer dist
+    pause
+)
