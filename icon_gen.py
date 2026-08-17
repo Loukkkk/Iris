@@ -40,3 +40,25 @@ with open('icon.ico','wb') as f:
     f.write(header + dirs + b''.join(pngs))
 
 print(f'  icon.ico genere ({len(header+dirs)+sum(len(p) for p in pngs)} bytes)')
+
+# Generate splash screen for launcher
+from PIL import ImageFont
+# Base is fully opaque RGB
+splash = Image.new('RGB', (400, 200), (8, 14, 24))
+d = ImageDraw.Draw(splash)
+d.rectangle([0, 0, 399, 199], outline=(42, 72, 96), width=2)
+# Draw the app icon (RGBA) in the splash using alpha_composite
+# To alpha_composite, we need an RGBA canvas the same size
+layer = Image.new('RGBA', (400, 200), (0,0,0,0))
+ic = make_img(64)
+# Shifted from X=30 to X=70 to center
+layer.paste(ic, (70, 68))
+# Merge it onto the opaque RGB background
+splash.paste(layer, mask=layer)
+# Text
+d = ImageDraw.Draw(splash)
+# Shifted from X=120 to X=150 to center
+d.text((150, 68), 'Iris', fill=(232, 244, 248), font_size=40)
+d.text((150, 115), 'Loading / Chargement...', fill=(93, 212, 240), font_size=16)
+splash.save('splash.png')
+print('  splash.png genere')

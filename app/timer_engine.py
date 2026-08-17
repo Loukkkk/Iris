@@ -23,7 +23,9 @@ class TimerEngine(QObject):
         self._elapsed = 0          # seconds since last break/start
         self._break_elapsed = 0    # seconds into current break
         self._suppressed_ticks = 0 # how long we've been suppressed
+        self._suppressed_ticks = 0 # how long we've been suppressed
         self._pending_break = False # break is pending (suppressed)
+        self._in_tick = False
 
         self._tray = None
         self._main_window = None
@@ -70,6 +72,15 @@ class TimerEngine(QObject):
         return self._settings.get("break_duration_sec", 20)
 
     def _tick(self):
+        if getattr(self, "_in_tick", False):
+            return
+        self._in_tick = True
+        try:
+            self._do_tick()
+        finally:
+            self._in_tick = False
+
+    def _do_tick(self):
         from app.detector import should_suppress_alert
 
         if self._state == self.STATE_PAUSED:

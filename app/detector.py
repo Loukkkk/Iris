@@ -98,8 +98,19 @@ def _is_media_playing() -> bool:
         QTimer.singleShot(800, loop.quit)  # 800ms timeout
         thread.start()
         loop.exec()
-        thread.quit()
-        thread.wait(200)
+        
+        if thread.isRunning():
+            thread.quit()
+            if not thread.wait(200):
+                # Thread is still running. Prevent GC crash by keeping a reference.
+                global _abandoned_threads
+                if '_abandoned_threads' not in globals():
+                    _abandoned_threads = []
+                _abandoned_threads.append((thread, worker))
+                # Clean up old ones
+                _abandoned_threads = [(t, w) for t, w in _abandoned_threads if t.isRunning()]
+                return False
+                
         return _result[0]
 
     except ImportError:

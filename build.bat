@@ -66,6 +66,7 @@ python -m PyInstaller ^
     --windowed ^
     --name "Iris" ^
     --icon "icon.ico" ^
+    --add-data "splash.png;." ^
     --add-data "Iris_app.zip;." ^
     launcher.py
 if errorlevel 1 ( echo ERREUR PyInstaller (launcher) & pause & exit /b 1 )

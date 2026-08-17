@@ -37,7 +37,32 @@ def _extract_app() -> str:
     if os.path.isdir(dest_dir) and os.path.exists(hash_file):
         with open(hash_file, "r") as f:
             if f.read().strip() == new_hash:
-                return os.path.join(dest_dir, "Iris_app.exe")
+                return os.path.join(dest_dir, "Iris_app.exe"), None
+
+    # Show image splash screen via PowerShell
+    if hasattr(sys, "_MEIPASS"):
+        img_path = os.path.join(sys._MEIPASS, "splash.png")
+    else:
+        img_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "splash.png")
+
+    ps_script = f"""
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+$f = New-Object System.Windows.Forms.Form
+$f.FormBorderStyle = 'None'
+$f.StartPosition = 'CenterScreen'
+$img = [System.Drawing.Image]::FromFile('{img_path}')
+$f.ClientSize = $img.Size
+$f.BackgroundImage = $img
+[void]$f.ShowDialog()
+"""
+    splash_proc = subprocess.Popen(
+        ["powershell", "-NoProfile", "-Command", "-"],
+        stdin=subprocess.PIPE,
+        creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)
+    )
+    splash_proc.stdin.write(ps_script.encode('utf-8'))
+    splash_proc.stdin.close()
 
     # Extract fresh copy
     if os.path.isdir(dest_dir):
@@ -50,12 +75,11 @@ def _extract_app() -> str:
     with open(hash_file, "w") as f:
         f.write(new_hash)
 
-    return os.path.join(dest_dir, "Iris_app.exe")
-
+    return os.path.join(dest_dir, "Iris_app.exe"), splash_proc
 
 def main():
     try:
-        target = _extract_app()
+        target, splash_proc = _extract_app()
     except Exception as e:
         import ctypes
         ctypes.windll.user32.MessageBoxW(0, f"Erreur au démarrage d'Iris :\n{e}", "Iris — Erreur", 0x10)
@@ -67,11 +91,19 @@ def main():
 
     # Pass our own path so Iris_app.exe can register the correct startup entry
     own_path = sys.executable if getattr(sys, "frozen", False) else os.path.abspath(__file__)
-    subprocess.Popen(
+    app_proc = subprocess.Popen(
         [target, "--launcher-path", own_path] + sys.argv[1:],
         startupinfo=si,
         close_fds=True
     )
+
+    if splash_proc is not None:
+        import time
+        time.sleep(1.5)
+        try:
+            splash_proc.kill()
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":

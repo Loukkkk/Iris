@@ -132,6 +132,16 @@ If a break is due while suppression is active, the alert queues up silently and 
 
 ---
 
-## Configuration File Path
+## Cache & Application Data Locations (Windows)
 
-`%APPDATA%\Iris\settings.json`
+Soundboard Pro stores its configuration, temporary engine caches, and downloaded audio files inside the Windows user local directory.
+
+* Main Application Directory:
+```%LOCALAPPDATA%\SoundboardPro\```
+(Equivalent to: C:\Users\<YourUsername>\AppData\Local\SoundboardPro\)
+
+Inside this folder, you will find:
+- config.json : Contains your primary settings, collection lists, volumes, and custom hotkey bindings.
+- devices_cache.json : Stores Windows PortAudio endpoints hardware fingerprints to accelerate application boot time.
+- numba_cache\ : Dedicated internal directory holding pre-compiled Numba LLVM bytecode acceleration views to eliminate runtime sound loading latency.
+- downloads\ : Cache directory housing .mp3 / .wav assets downloaded on-the-fly via the built-in online Freesound and YouTube streaming loaders.
